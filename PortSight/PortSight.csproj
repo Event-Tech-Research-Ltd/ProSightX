@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>PortSight</RootNamespace>
+    <AssemblyName>PortSight</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <Product>PortSight</Product>
+    <Version>2.0.0</Version>
+    <Description>Identify the switch port and VLAN from a laptop RJ45 on Cat5/6. Dante search, OSC test, link load.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="app.ico" />
+    <EmbeddedResource Include="Resources\etr-logo.png" />
+  </ItemGroup>
+</Project>
