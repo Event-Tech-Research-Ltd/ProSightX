@@ -1,0 +1,59 @@
+name: Build ProSight downloads
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Windows x64 portable
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build Windows portable ZIP
+        shell: pwsh
+        run: ./build-windows.ps1 -Runtime win-x64
+      # The Windows --selftest opens a modal MessageBox: run it manually after download.
+      - name: Upload Windows download
+        uses: actions/upload-artifact@v4
+        with:
+          name: ProSight-Windows-x64
+          path: dist/win-x64/ProSight-*-win-x64.zip
+          if-no-files-found: error
+          retention-days: 30
+
+  macos:
+    name: macOS ${{ matrix.label }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: osx-x64
+            runner: macos-15-intel
+            label: Intel
+          - rid: osx-arm64
+            runner: macos-15
+            label: Apple-Silicon
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build, sign and self-test Mac app
+        run: bash ./build-mac.sh "${{ matrix.rid }}"
+      - name: Upload Mac download
+        uses: actions/upload-artifact@v4
+        with:
+          name: ProSight-macOS-${{ matrix.label }}
+          path: dist/${{ matrix.rid }}/ProSight-*-${{ matrix.rid }}.zip
+          if-no-files-found: error
+          retention-days: 30
