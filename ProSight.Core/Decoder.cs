@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace PortSight;
+namespace ProSight;
 
 public static class Decoder
 {
@@ -61,7 +61,8 @@ public static class Decoder
                 int st = p[o];
                 n.ChassisId = st == 4 && len >= 7 ? Mac(p, o + 1) : Ascii(p, o + 1, len - 1);
             }
-            else if (type == 2 && len >= 1) n.PortId = Ascii(p, o + 1, len - 1);
+            else if (type == 2 && len >= 1)
+                n.PortId = p[o] == 3 && len >= 7 ? Mac(p, o + 1) : Ascii(p, o + 1, len - 1); // subtype 3 = MAC address
             else if (type == 4) n.PortDescription = Ascii(p, o, len);
             else if (type == 5) n.SwitchName = Ascii(p, o, len);
             else if (type == 6) n.Software = Ascii(p, o, len);

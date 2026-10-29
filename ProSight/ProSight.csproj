@@ -5,14 +5,18 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>PortSight</RootNamespace>
-    <AssemblyName>PortSight</AssemblyName>
+    <RootNamespace>ProSight</RootNamespace>
+    <AssemblyName>ProSight</AssemblyName>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>app.ico</ApplicationIcon>
-    <Product>PortSight</Product>
-    <Version>2.0.0</Version>
+    <!-- Single source of DPI config (was conflicting with app.manifest, WFAC010). Layout is pixel-based and auto-scaled from 96 DPI. -->
+    <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+    <Product>ProSight</Product>
     <Description>Identify the switch port and VLAN from a laptop RJ45 on Cat5/6. Dante search, OSC test, link load.</Description>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ProSight.Core\ProSight.Core.csproj" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="app.ico" />
     <EmbeddedResource Include="Resources\etr-logo.png" />

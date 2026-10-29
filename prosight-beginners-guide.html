@@ -1,0 +1,466 @@
+<title>ProSight Beginner's Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@300;500;600&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one readable column + sticky contents rail; a single committed dark world taken from the Event Tech Research mark —
+   near-black ground, white rounded strokes with a soft glow, waveform bars and node-and-line glyphs, steel as the only tint. */
+:root {
+  --bg: #08080a;            /* the mark's ground */
+  --surface: #0f1013;
+  --raise: #15161a;
+  --ink: #eef0f3;
+  --muted: #9a9fa8;
+  --faint: #5d626b;
+  --line: #24262c;
+  --ring: #3a3d44;          /* the mark's grey rim */
+  --steel: #9aadc0;         /* ProSight's steel accent */
+  --glow: 0 0 6px rgba(255,255,255,.55), 0 0 18px rgba(255,255,255,.18);
+  --good: #8fd1a6; --warn: #e6c37a; --bad: #f09a92;
+  --display: "Sora", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", Consolas, "Cascadia Mono", monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 17px/1.65 var(--body);
+  background-image: radial-gradient(ellipse 900px 520px at 78% -8%, rgba(154,173,192,.10), transparent 70%); background-repeat: no-repeat; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 0 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+a { color: var(--ink); text-decoration-color: var(--steel); text-underline-offset: 3px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 6px; box-shadow: var(--glow); }
+h1, h2, h3 { font-family: var(--display); font-weight: 500; line-height: 1.12; text-wrap: balance; margin: 0; letter-spacing: -.01em; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.35rem; font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+b { font-weight: 700; }
+code { font-family: var(--mono); font-size: .86em; color: var(--steel); overflow-wrap: anywhere; }
+.btn { font-family: var(--body); font-weight: 700; font-size: .88em; color: var(--ink); border: 1.5px solid var(--ink); padding: 0 9px; border-radius: 999px; white-space: nowrap; box-shadow: 0 0 10px rgba(255,255,255,.12); }
+.label { font-family: var(--mono); font-size: .74rem; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); }
+
+/* Header: the mark, then a waveform rule drawn in the mark's stroke language */
+header.top { padding-block: 44px 34px; display: grid; gap: 22px; }
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand img { width: 64px; height: 64px; border-radius: 50%; }
+.brand .who { display: grid; line-height: 1.25; }
+.brand .who span:first-child { font-family: var(--display); font-weight: 600; letter-spacing: .02em; }
+.brand .who span:last-child { font-family: var(--mono); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+header.top h1 { font-size: clamp(2.5rem, 6vw, 4.1rem); font-weight: 300; }
+header.top h1 strong { font-weight: 600; text-shadow: 0 0 22px rgba(255,255,255,.35); }
+.lead { font-size: 1.18rem; color: var(--ink); max-width: 60ch; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 26px; color: var(--muted); font-size: .95rem; }
+.facts b { color: var(--ink); font-weight: 400; }
+.wave { width: 100%; height: 46px; display: block; }
+.wave rect, .wave circle, .wave line { filter: drop-shadow(0 0 3px rgba(255,255,255,.6)); }
+
+/* Two-column layout */
+.layout { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 52px; padding-top: 8px; }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 22px); align-self: start; font-size: .94rem; }
+nav.toc ol { list-style: none; margin: 12px 0 0; padding: 0 0 0 16px; display: grid; gap: 2px; border-left: 2px solid var(--line); }
+nav.toc a { display: block; padding: 5px 0 5px 14px; margin-left: -21px; color: var(--muted); text-decoration: none; position: relative; }
+nav.toc a::before { content: ""; position: absolute; left: 0; top: 50%; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%; border: 2px solid var(--line); background: var(--bg); }
+nav.toc a:hover { color: var(--ink); }
+nav.toc a.on { color: var(--ink); }
+nav.toc a.on::before { border-color: var(--ink); box-shadow: var(--glow); }
+main { min-width: 0; display: grid; gap: 72px; }
+section { display: grid; gap: 18px; scroll-margin-top: 24px; min-width: 0; }
+.kicker { font-family: var(--mono); font-size: .74rem; letter-spacing: .16em; color: var(--steel); display: flex; align-items: center; gap: 10px; }
+.kicker::before { content: ""; width: 22px; height: 2px; border-radius: 2px; background: var(--steel); box-shadow: 0 0 6px rgba(154,173,192,.6); }
+
+/* Steps: the mark's node-and-line glyph */
+ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; max-width: 72ch; counter-reset: s; }
+ol.steps > li { counter-increment: s; display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: 14px; position: relative; padding-bottom: 14px; }
+ol.steps > li::before { content: counter(s); font: 600 .82rem/1 var(--mono); width: 2rem; height: 2rem; border-radius: 50%; display: grid; place-items: center;
+  border: 2px solid var(--ink); color: var(--ink); background: var(--bg); box-shadow: var(--glow); position: relative; z-index: 1; }
+ol.steps > li:not(:last-child)::after { content: ""; position: absolute; left: calc(1rem - 1px); top: 2rem; bottom: 0; width: 2px; background: var(--ring); }
+ol.steps > li > div { display: grid; gap: 3px; min-width: 0; padding-top: 3px; }
+ol.steps > li > div span { color: var(--muted); }
+ol.steps > li > div b { color: var(--ink); }
+
+/* Kit list */
+ul.need { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+ul.need li { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+ul.need li span:last-child { color: var(--muted); }
+.tag { justify-self: start; font-family: var(--mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; padding: 2px 9px; border-radius: 999px; }
+.tag.req { color: var(--ink); border: 1px solid var(--ink); box-shadow: 0 0 8px rgba(255,255,255,.15); }
+.tag.opt { color: var(--muted); border: 1px solid var(--ring); }
+
+/* Glossary */
+dl.gloss { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0 36px; }
+dl.gloss > div { padding: 13px 0; border-top: 1px solid var(--line); display: grid; gap: 3px; }
+dl.gloss dt { font-family: var(--display); font-weight: 500; }
+dl.gloss dd { margin: 0; color: var(--muted); }
+
+/* App screen sample */
+.screen { background: #050506; border: 1px solid var(--ring); border-radius: 14px; overflow: hidden; min-width: 0; }
+.screen .bar { display: flex; align-items: center; gap: 7px; padding: 9px 14px; border-bottom: 1px solid var(--line); font: .74rem var(--mono); letter-spacing: .06em; color: var(--muted); }
+.screen .bar i { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--faint); display: block; }
+.screen pre { margin: 0; padding: 14px 16px; font: 13.5px/1.6 var(--mono); color: #c9ced6; overflow-x: auto; }
+.screen .hl { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,.45); }
+.example-note { font-size: .84rem; color: var(--faint); }
+
+/* Tab chapters */
+.tab { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px; display: grid; gap: 16px; position: relative; overflow: hidden; }
+.tab::before { content: ""; position: absolute; left: 24px; right: 24px; top: 0; height: 2px; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--ink) 18%, var(--ink) 40%, transparent); box-shadow: 0 0 12px rgba(255,255,255,.45); opacity: .85; }
+.tab header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.tab .q { font-size: 1.1rem; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill { font: .72rem var(--mono); letter-spacing: .06em; border: 1px solid var(--ring); border-radius: 999px; padding: 2px 10px; color: var(--muted); white-space: nowrap; }
+.pill.admin { border-color: var(--warn); color: var(--warn); }
+.os { font: .7rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--bg); background: var(--steel); border-radius: 4px; padding: 1px 6px; margin-right: 4px; white-space: nowrap; }
+.oscard { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: grid; gap: 14px; align-content: start; min-width: 0; }
+.oscard h3 { display: flex; align-items: center; gap: 10px; }
+.cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; }
+.cols > div { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.tip { border: 1px solid var(--ring); background: var(--raise); border-radius: 12px; padding: 12px 16px; font-size: .95rem; color: var(--muted); }
+.tip b:first-child { color: var(--ink); }
+
+/* Tables */
+.tablebox { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+th, td { text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td { color: var(--muted); }
+td b { color: var(--ink); }
+th { font: .7rem var(--mono); text-transform: uppercase; letter-spacing: .14em; color: var(--faint); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { white-space: nowrap; color: var(--ink); }
+.chip { display: inline-flex; align-items: center; gap: 7px; font: 600 .8rem var(--mono); letter-spacing: .02em; white-space: nowrap; }
+.chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
+.chip.good { color: var(--good); } .chip.warn { color: var(--warn); } .chip.bad { color: var(--bad); } .chip.neutral { color: var(--muted); }
+.chip.neutral::before { box-shadow: none; }
+
+/* FAQ */
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 13px 18px; }
+details + details { margin-top: 8px; }
+details[open] { border-color: var(--ring); }
+summary { cursor: pointer; font-family: var(--display); font-weight: 500; }
+summary::marker { color: var(--steel); }
+details p { margin-top: 8px; color: var(--muted); }
+
+footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--faint); font-size: .88rem; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  nav.toc { position: static; }
+  nav.toc ol { display: flex; flex-wrap: wrap; gap: 6px; border: 0; padding: 0; }
+  nav.toc a { margin: 0; padding: 4px 12px; border: 1px solid var(--ring); border-radius: 999px; }
+  nav.toc a::before { display: none; }
+  nav.toc a.on { border-color: var(--ink); box-shadow: 0 0 10px rgba(255,255,255,.18); }
+  .cols { grid-template-columns: minmax(0, 1fr); }
+  h2 { font-size: 1.7rem; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+  .wave .b { transform-box: fill-box; transform-origin: center; animation: breathe 3.2s ease-in-out infinite; }
+  @keyframes breathe { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(.82); } }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><img src="data:image/png;base64,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" alt="Event Tech Research mark" width="64" height="64"><div class="who"><span>ProSight</span><span>Event Tech Research</span></div></div>
+    <h1>ProSight <strong>beginner's guide</strong></h1>
+    <p class="lead">Plug a laptop into a network socket on the wall and ProSight tells you where that socket goes: which switch, which port, which network. It also shows what else is connected and whether the connection is healthy.</p>
+    <svg class="wave" viewBox="0 0 640 46" preserveAspectRatio="xMinYMid meet" aria-hidden="true"><rect class="b" style="animation-delay:0.00s" x="8" y="16.0" width="6" height="14" rx="3" fill="#fff"/><rect class="b" style="animation-delay:0.18s" x="26" y="10.0" width="6" height="26" rx="3" fill="#fff"/><rect class="b" style="animation-delay:0.36s" x="44" y="3.0" width="6" height="40" rx="3" fill="#fff"/><rect class="b" style="animation-delay:0.54s" x="62" y="8.0" width="6" height="30" rx="3" fill="#fff"/><rect class="b" style="animation-delay:0.72s" x="80" y="14.0" width="6" height="18" rx="3" fill="#fff"/><rect class="b" style="animation-delay:0.90s" x="98" y="6.0" width="6" height="34" rx="3" fill="#fff"/><rect class="b" style="animation-delay:1.08s" x="116" y="12.0" width="6" height="22" rx="3" fill="#fff"/><rect class="b" style="animation-delay:1.26s" x="134" y="17.0" width="6" height="12" rx="3" fill="#fff"/><rect class="b" style="animation-delay:1.44s" x="152" y="19.0" width="6" height="8" rx="3" fill="#fff"/><rect class="b" style="animation-delay:1.62s" x="170" y="17.0" width="6" height="12" rx="3" fill="#fff"/><line x1="196" y1="23" x2="600" y2="23" stroke="#3a3d44" stroke-width="2" stroke-linecap="round"/><circle cx="210" cy="23" r="6" fill="#08080a" stroke="#fff" stroke-width="2.5"/><circle cx="612" cy="23" r="6" fill="#08080a" stroke="#fff" stroke-width="2.5"/></svg>
+    <div class="facts"><span><b>For</b> anyone new to networks: AV, events, venue and IT crew</span><span><b>Runs on</b> Windows 10/11 and macOS 12 or later (Apple Silicon or Intel)</span><span><b>Version</b> 2.1</span></div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Contents">
+      <div class="label">Contents</div>
+      <ol>
+        <li><a href="#before">Before you start</a></li>
+        <li><a href="#install">Getting ProSight</a></li>
+        <li><a href="#words">Words you'll see</a></li>
+        <li><a href="#first">Your first wall socket</a></li>
+        <li><a href="#tabs">The six tabs</a></li>
+        <li><a href="#results">Reading the results</a></li>
+        <li><a href="#help">When something goes wrong</a></li>
+        <li><a href="#faq">Questions</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="before">
+        <div class="kicker">STEP ZERO</div>
+        <h2>Before you start</h2>
+        <p>Check you have these. The first three are essential; the rest make ProSight more useful.</p>
+        <ul class="need">
+          <li><span class="tag req">Needed</span><b>A Windows laptop or a Mac</b><span>Windows 10 or 11, or macOS 12 or later. Nothing else to install: ProSight brings everything it needs.</span></li>
+          <li><span class="tag req">Needed</span><b>A wired network port</b><span>The square socket on the laptop (RJ45). Most Macs need a USB-C or Thunderbolt network adapter. Wi-Fi won't do.</span></li>
+          <li><span class="tag req">Needed</span><b>A network cable you trust</b><span>A Cat5e or Cat6 patch lead. A damaged lead gives misleading results.</span></li>
+          <li><span class="tag opt">Recommended</span><b>Wireshark installed</b><span>Free from wireshark.org. It makes the Listen tab faster and more exact. On a Mac it also saves typing your password each time.</span></li>
+          <li><span class="tag opt">Optional</span><b>The vendor list file</b><span>Save <code>oui.csv</code> from the IEEE to see device makers' names. <span class="os">Win</span>next to <code>ProSight.exe</code>. <span class="os">Mac</span>in <code>~/Library/Application Support/ProSight/</code>.</span></li>
+          <li><span class="tag opt">Optional</span><b>Administrator password</b><span>Only the Listen tab needs it: Windows asks to restart ProSight; a Mac asks for your password. Everything else works without it.</span></li>
+        </ul>
+        <div class="tip"><b>First time on this laptop?</b> Run the self-test once, so you know the app works before you're on site. <span class="os">Win</span><code>ProSight.exe --selftest</code> shows a window with every check marked PASS or FAIL. <span class="os">Mac</span>in Terminal: <code>/Applications/ProSight.app/Contents/MacOS/ProSight --selftest</code>.</div>
+      </section>
+
+      <section id="install">
+        <div class="kicker">ONE-TIME SETUP</div>
+        <h2>Getting ProSight</h2>
+        <p>ProSight is a standalone app. There's no installer and nothing else to download.</p>
+        <div class="cols">
+          <div class="oscard">
+            <h3><span class="os">Win</span>Windows</h3>
+            <ol class="steps">
+              <li><div><b>Unzip</b><span>Extract <code>ProSight-2.1.0-win-x64.zip</code> to a folder you keep, such as <code>Documents\ProSight</code>.</span></div></li>
+              <li><div><b>Open <code>ProSight.exe</code></b><span>The first launch takes a few seconds longer while it unpacks.</span></div></li>
+              <li><div><b>If Windows warns you</b><span>"Windows protected your PC" appears for apps from outside the Store. Click <b>More info</b>, then <b>Run anyway</b>.</span></div></li>
+            </ol>
+            <p class="example-note">Windows on Arm laptops use the <code>win-arm64</code> download.</p>
+          </div>
+          <div class="oscard">
+            <h3><span class="os">Mac</span>Mac</h3>
+            <ol class="steps">
+              <li><div><b>Unzip and move</b><span>Double-click <code>ProSight-2.1.0-osx-arm64.zip</code>, then drag <b>ProSight</b> into <b>Applications</b>.</span></div></li>
+              <li><div><b>If macOS won't open it</b><span>Open <b>System Settings → Privacy &amp; Security</b>, scroll down and click <b>Open Anyway</b> next to ProSight.</span></div></li>
+              <li><div><b>Allow the local network</b><span>When asked "ProSight would like to find devices on your local network", click <b>Allow</b>. Without it, Who's up?, Dante and OSC find nothing.</span></div></li>
+            </ol>
+            <p class="example-note">Intel Macs use the <code>osx-x64</code> download.</p>
+          </div>
+        </div>
+        <div class="tip"><b>Your download may not open the first time.</b> Copies of ProSight that aren't signed with a publisher certificate get these warnings once. After that they open normally.</div>
+      </section>
+
+      <section id="words">
+        <div class="kicker">JARGON, DECODED</div>
+        <h2>Words you'll see</h2>
+        <p>You don't need to be a network engineer. These are the only terms the guide uses.</p>
+        <dl class="gloss">
+          <div><dt>Wall socket / drop / jack</dt><dd>The network socket in the wall or floor box. A cable runs from it, hidden in the building, to a switch.</dd></div>
+          <div><dt>Switch</dt><dd>The box in a rack that every socket's cable plugs into. It has numbered ports.</dd></div>
+          <div><dt>Port</dt><dd>One socket on the switch, with a name like <code>Gi1/0/24</code> (gigabit, stack 1, module 0, port 24).</dd></div>
+          <div><dt>VLAN</dt><dd>A separate "network inside the network". Audio, phones and office PCs are often kept on different VLANs, each with a number.</dd></div>
+          <div><dt>LLDP / CDP</dt><dd>Short announcements a managed switch sends out of each port, saying its name and port. ProSight listens for these.</dd></div>
+          <div><dt>IP address</dt><dd>A device's address on the network, like <code>10.40.0.12</code>.</dd></div>
+          <div><dt>Subnet</dt><dd>The block of addresses your laptop can talk to directly, written like <code>10.40.0.0/24</code> (that's 254 addresses).</dd></div>
+          <div><dt>MAC address</dt><dd>A device's fixed hardware ID, like <code>00:1A:A2:4C:10:18</code>. The first half tells you the maker.</dd></div>
+          <div><dt>Dante</dt><dd>A system that carries live audio over a network, used by mixing desks, stage boxes and amplifiers.</dd></div>
+          <div><dt>OSC</dt><dd>Open Sound Control: small messages that control show software, sent by apps like TouchOSC or GyrOSC.</dd></div>
+          <div><dt>Multicast / flood</dt><dd>Traffic sent to many devices at once. Lots of it can swamp a connection.</dd></div>
+          <div><dt>Mbps</dt><dd>Megabits per second: connection speed. A healthy modern socket runs at 1000 Mbps.</dd></div>
+        </dl>
+      </section>
+
+      <section id="first">
+        <div class="kicker">ABOUT FIVE MINUTES</div>
+        <h2>Your first wall socket</h2>
+        <p>Do these in order. Each step tells you something the next one builds on.</p>
+        <ol class="steps">
+          <li><div><b>Plug in.</b><span>Connect the laptop's network port to the wall socket with your patch lead. Wait about 10 seconds for the link lights.</span></div></li>
+          <li><div><b>Open ProSight and choose your adapter.</b><span>At the top, under <span class="label">Network adapter</span>, pick the wired one. Real, connected adapters are listed first, so the default is usually right.</span></div></li>
+          <li><div><b>Check the cable: Load tab → <span class="btn">Sample 3 seconds</span>.</b><span>Look at the <b>Link</b> line. <b>1000 Mbps</b> is good. <b>100 Mbps</b> usually means a damaged cable or socket; see <a href="#results">Reading the results</a>.</span></div></li>
+          <li><div><b>Find where it goes: Listen tab → <span class="btn">Listen live</span>.</b><span><span class="os">Win</span>If asked, click <b>Yes</b> to restart ProSight as Administrator, then click <span class="btn">Listen live</span> again. <span class="os">Mac</span>Type your Mac password when asked. Then wait up to a minute for the switch name, port and VLAN.</span></div></li>
+          <li><div><b>See who else is there: Who's up? tab → <span class="btn">Scan live hosts</span>.</b><span>Lists every device on this part of the network.</span></div></li>
+          <li><div><b>On an audio network: Dante tab → <span class="btn">Browse Dante</span>.</b><span>Lists the audio devices and their addresses.</span></div></li>
+        </ol>
+        <div class="tip"><b>No switch to practise on?</b> On the Listen tab, click <span class="btn">Built-in Cisco sample</span>. It shows exactly what a real result looks like, using made-up switch data.</div>
+      </section>
+
+      <section id="tabs">
+        <div class="kicker">WHAT EACH TAB DOES</div>
+        <h2>The six tabs</h2>
+        <p>The progress bar next to the adapter picker shows how far along any wait is, as a percentage.</p>
+
+        <article class="tab" id="listen">
+          <header><h3>Listen</h3><div class="meta"><span class="pill">up to 65 s</span><span class="pill admin">Needs admin password</span></div></header>
+          <p class="q"><b>Which switch, port and VLAN is this socket on?</b></p>
+          <div class="cols">
+            <div>
+              <span class="label">How to use it</span>
+              <ol class="steps">
+                <li><div><span>Leave <span class="label">Max wait</span> at 65 seconds. Switches announce themselves every 30 to 60 seconds.</span></div></li>
+                <li><div><span>Click <span class="btn">Listen live</span>. On a Mac, type your password when asked. With Wireshark installed it stops as soon as it hears the switch.</span></div></li>
+                <li><div><span>Read the <b>Switch</b>, <b>Port</b> and <b>Native VLAN</b> lines. Those three are usually all you need.</span></div></li>
+              </ol>
+              <div class="tip"><b>Write down</b> the switch name and port, e.g. <code>core-sw-01 Gi1/0/24</code>. That's what the network team will ask for.</div>
+            </div>
+            <div>
+              <div class="screen" role="img" aria-label="Example Listen result">
+                <div class="bar"><i></i><i></i><i></i><span>Listen · Built-in Cisco sample</span></div>
+<pre>Protocol    LLDP
+<span class="hl">Switch      core-sw-01.lab.local</span>
+Platform    C9300-48P
+<span class="hl">Port        Gi1/0/24</span>
+Port desc   GigabitEthernet1/0/24
+<span class="hl">Native VLAN 20</span>
+Voice VLAN  30
+Mgmt IP     10.10.10.1
+Link        1000BASE-T FD</pre>
+              </div>
+              <p class="example-note">Example only: the built-in sample, not a real switch.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="tab" id="hosts">
+          <header><h3>Who's up?</h3><div class="meta"><span class="pill">seconds</span><span class="pill">No admin</span></div></header>
+          <p class="q"><b>What else is connected to this network?</b></p>
+          <div class="cols">
+            <div>
+              <span class="label">How to use it</span>
+              <ol class="steps">
+                <li><div><span>The address box is filled in for you, e.g. <code>10.40.0.0/24</code>. You can also type a short range like <code>10.40.0.1-50</code>.</span></div></li>
+                <li><div><span>Click <span class="btn">Scan live hosts</span>. Click <span class="btn">Stop scan</span> to cancel.</span></div></li>
+                <li><div><span>Each row is one live device, with its address, maker and name where known.</span></div></li>
+              </ol>
+            </div>
+            <div>
+              <span class="label">The "Seen via" column</span>
+              <div class="tablebox"><table>
+                <tr><th>Shows</th><th>Means</th></tr>
+                <tr><td><code>icmp</code></td><td>It answered a ping.</td></tr>
+                <tr><td><code>tcp</code></td><td>It answered a connection attempt.</td></tr>
+                <tr><td><code>arp</code></td><td>It's there but ignores everything else. Common for printers and AV gear.</td></tr>
+                <tr><td><code>arp (cached)</code></td><td><span class="os">Mac</span>The Mac remembered it from earlier. It may have left in the last 20 minutes.</td></tr>
+              </table></div>
+              <div class="tip"><b>Only scan networks you're allowed to test.</b> On a venue's network, ask first.</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="tab" id="dante">
+          <header><h3>Dante</h3><div class="meta"><span class="pill">about 3 s</span><span class="pill">No admin</span></div></header>
+          <p class="q"><b>Which audio devices are on this network, and at what address?</b></p>
+          <div class="cols">
+            <div>
+              <span class="label">How to use it</span>
+              <ol class="steps">
+                <li><div><span>Plug into a socket on the audio network. Dante devices can only be found from the same network.</span></div></li>
+                <li><div><span>Click <span class="btn">Browse Dante</span>.</span></div></li>
+                <li><div><span>Each line shows a device name, its IP address, and its maker and model.</span></div></li>
+              </ol>
+            </div>
+            <div>
+              <div class="tip"><b>See a banner reading "OFFLINE DEMO DATA"?</b> Nothing answered, so ProSight is showing a practice rack. Those devices are <b>not</b> on your network. Check you're plugged into the audio network and have the wired adapter selected.</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="tab" id="osc">
+          <header><h3>OSC</h3><div class="meta"><span class="pill">runs until stopped</span><span class="pill">No admin</span></div></header>
+          <p class="q"><b>Are show-control messages reaching this laptop?</b></p>
+          <div class="cols">
+            <div>
+              <span class="label">How to use it</span>
+              <ol class="steps">
+                <li><div><span>Set <span class="label">UDP port</span> to match your sending app (8000 is usual).</span></div></li>
+                <li><div><span>Click <span class="btn">Start listener</span>. Two test messages appear straight away, proving it works.</span></div></li>
+                <li><div><span>Send from your app to this laptop's IP address. Messages appear as they arrive.</span></div></li>
+              </ol>
+            </div>
+            <div>
+              <div class="screen" role="img" aria-label="Example OSC log">
+                <div class="bar"><i></i><i></i><i></i><span>OSC · UDP 8000</span></div>
+<pre><span class="hl">/gyrosc/gyro  60/s</span>
+20:14:02  127.0.0.1  /gyrosc/gyro  0.12  -0.48  0.91
+20:14:02  127.0.0.1  /voices/3/osc/14/freq  440</pre>
+              </div>
+              <p class="example-note">The top line shows messages per second for each address.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="tab" id="load">
+          <header><h3>Load</h3><div class="meta"><span class="pill">3 s</span><span class="pill">No admin</span></div></header>
+          <p class="q"><b>How healthy and how busy is this connection right now?</b></p>
+          <div class="cols">
+            <div>
+              <span class="label">How to use it</span>
+              <ol class="steps">
+                <li><div><span>Click <span class="btn">Sample 3 seconds</span>.</span></div></li>
+                <li><div><span>Check <b>Link</b> (speed), <b>Errors</b> (should be 0) and the <b>Verdict</b> line.</span></div></li>
+              </ol>
+              <p class="example-note">This measures the laptop's own connection, not the whole network.</p>
+            </div>
+            <div>
+              <div class="screen" role="img" aria-label="Example Load result">
+                <div class="bar"><i></i><i></i><i></i><span>Load · example</span></div>
+<pre><span class="hl">Link        1000 Mbps  (Up)</span>
+Utilisation 3.2 %
+Flood in    1.80 Mbps multicast+broadcast
+<span class="hl">Errors      0.0 /s</span>
+<span class="hl">Verdict     Healthy</span></pre>
+              </div>
+              <p class="example-note">Example figures, for illustration.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="tab" id="monitor">
+          <header><h3>Monitor</h3><div class="meta"><span class="pill">updates every second</span><span class="pill">No admin</span></div></header>
+          <p class="q"><b>How does the connection behave over a few minutes?</b></p>
+          <p>Click <span class="btn">Start monitor</span>. The same figures as Load update every second, with a graph of the last 90 seconds. Useful during a soundcheck or when a problem comes and goes. Click <span class="btn">Stop monitor</span> to finish.</p>
+        </article>
+      </section>
+
+      <section id="results">
+        <div class="kicker">WHAT IT'S TELLING YOU</div>
+        <h2>Reading the results</h2>
+        <p>Load and Monitor sum up the connection in one verdict.</p>
+        <div class="tablebox"><table>
+          <tr><th>Verdict</th><th>What it means</th><th>What to do</th></tr>
+          <tr><td><span class="chip good">Healthy</span></td><td>Normal traffic, no errors.</td><td>Nothing.</td></tr>
+          <tr><td><span class="chip neutral">Idle</span></td><td>Very little traffic.</td><td>Normal for an unused socket.</td></tr>
+          <tr><td><span class="chip warn">Busy</span></td><td>Half to most of the speed is in use.</td><td>Fine for now; watch it in Monitor.</td></tr>
+          <tr><td><span class="chip warn">Saturated</span></td><td>The connection is full.</td><td>Tell the network team; things will slow or drop out.</td></tr>
+          <tr><td><span class="chip warn">High discards</span></td><td>Lots of traffic is being thrown away.</td><td>Watch in Monitor and report it.</td></tr>
+          <tr><td><span class="chip bad">Errors on link</span></td><td>Data is arriving damaged.</td><td>Swap your patch lead first. If errors continue, the socket or building cable is faulty.</td></tr>
+          <tr><td><span class="chip bad">Link down</span></td><td>No connection at all.</td><td>Check the lead is clicked in at both ends, and the socket is patched.</td></tr>
+        </table></div>
+        <div class="tip"><b>Speed shows 100 Mbps instead of 1000?</b> A gigabit connection needs all four pairs of wires in the cable; 100 Mbps manages on two. So this usually means a broken wire in the lead, the socket or the cable in the wall. Try another lead first.</div>
+      </section>
+
+      <section id="help">
+        <div class="kicker">TROUBLESHOOTING</div>
+        <h2>When something goes wrong</h2>
+        <div class="tablebox"><table>
+          <tr><th>You see</th><th>Try this</th></tr>
+          <tr><td>Listen: <b>Neighbor none</b></td><td>The switch may not announce itself (cheap unmanaged switches don't). Raise <span class="label">Max wait</span> to 120 and try again, or ask the network team.</td></tr>
+          <tr><td>Listen: <b>No capture backend</b></td><td><span class="os">Win</span>Restart ProSight as Administrator. <span class="os">Mac</span>Click Listen live again and enter your password. Installing Wireshark also helps. The message lists exactly what failed.</td></tr>
+          <tr><td>Listen: <b>WARNING … different adapters</b></td><td>The result might be from a docking station's port. Unplug other network cables and adapters, then listen again.</td></tr>
+          <tr><td>Listen: <b>cancelled at the password prompt</b></td><td><span class="os">Mac</span>Click Listen live again and type your Mac password. You need an administrator account on this Mac.</td></tr>
+          <tr><td>Who's up?: <b>Vendor column empty</b></td><td>Add the <code>oui.csv</code> file (see <a href="#before">Before you start</a> for where it goes).</td></tr>
+          <tr><td>Who's up? or Dante: <b>finds nothing at all</b></td><td><span class="os">Mac</span>ProSight may not be allowed on the local network. Open <b>System Settings → Privacy &amp; Security → Local Network</b> and switch ProSight on.</td></tr>
+          <tr><td>Dante: <b>demo banner</b></td><td>You're not on the audio network, or Wi-Fi is selected. Pick the wired adapter and try again.</td></tr>
+          <tr><td>OSC: <b>port already in use</b></td><td>Close the other OSC app, or change the UDP port number.</td></tr>
+          <tr><td>Load: <b>Flood in n/a</b></td><td>This laptop can't report that figure; Macs never can. Everything else is still correct.</td></tr>
+          <tr><td><b>No wired adapter listed</b></td><td>Plug the cable in first, or connect your USB network adapter, then restart ProSight. On a Mac, Wi-Fi is deliberately left out of the list.</td></tr>
+        </table></div>
+      </section>
+
+      <section id="faq">
+        <div class="kicker">GOOD QUESTIONS</div>
+        <h2>Questions</h2>
+        <div>
+          <details><summary>Can ProSight break anything on the network?</summary><p>No. It only listens and asks devices to say hello. It never changes a switch or a device. Still, only scan networks you have permission to test.</p></details>
+          <details><summary>Why does Listen need an admin password, but nothing else does?</summary><p>Hearing a switch's announcements means reading raw network traffic, which Windows and macOS both restrict. ProSight asks only when you click Listen live. On a Mac, installing Wireshark removes the password prompt.</p></details>
+          <details><summary>Is the Mac version the same as the Windows one?</summary><p>Yes: same six tabs, same results. It looks slightly different because it follows macOS conventions. The only figure a Mac can't show is <b>Flood in</b> on the Load and Monitor tabs.</p></details>
+          <details><summary>Why can't I use Wi-Fi?</summary><p>Switches only announce their port name down the cable. Over Wi-Fi there is no switch port to find.</p></details>
+          <details><summary>Why did Listen take a whole minute?</summary><p>Without Wireshark, ProSight has to wait the full time. With Wireshark installed it stops the moment it hears the switch.</p></details>
+          <details><summary>Is the built-in sample real data?</summary><p>No. It's a fixed example for practice and testing. Live results only come from Listen live.</p></details>
+        </div>
+      </section>
+
+      <footer><span>ProSight 2.1 for Windows and Mac · Beginner's guide · Event Tech Research.</span><span> For the full reference, see the ProSight Product Overview &amp; User Guide.</span></footer>
+    </main>
+  </div>
+</div>
+
+<script>
+(() => {
+  const links = [...document.querySelectorAll('nav.toc a')];
+  const byId = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  if (!('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      links.forEach(a => a.classList.remove('on'));
+      byId.get(e.target.id)?.classList.add('on');
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  document.querySelectorAll('main > section[id]').forEach(s => io.observe(s));
+})();
+</script>

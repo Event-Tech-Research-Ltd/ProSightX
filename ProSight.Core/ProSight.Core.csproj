@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Platform-neutral decoders, parsers and scanners + the per-OS network layer (Platform/). No NuGet packages. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>ProSight</RootNamespace>
+    <AssemblyName>ProSight.Core</AssemblyName>
+    <Description>Shared core for ProSight: LLDP/CDP, OSC, mDNS, pcap, host scan, NIC load; Windows and macOS network layers.</Description>
+  </PropertyGroup>
+</Project>

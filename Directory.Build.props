@@ -1,0 +1,9 @@
+<Project>
+  <!-- Shared by ProSight (Windows Forms), ProSight.Desktop (Avalonia: macOS + Windows) and ProSight.Core. -->
+  <PropertyGroup>
+    <Version>2.1.0</Version>
+    <Product>ProSight</Product>
+    <Company>Event Tech Research</Company>
+    <LangVersion>12</LangVersion>
+  </PropertyGroup>
+</Project>

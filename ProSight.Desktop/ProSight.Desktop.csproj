@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Cross-platform ProSight UI (Avalonia). Primary target: macOS on Apple Silicon (osx-arm64); also runs on Windows.
+       Build the Mac app with ./build-mac.sh (needs macOS + .NET 8 SDK). -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>ProSight.Desktop</RootNamespace>
+    <AssemblyName>ProSight</AssemblyName>
+    <RuntimeIdentifiers>osx-arm64;osx-x64;win-x64</RuntimeIdentifiers>
+    <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <Description>ProSight for macOS and Windows: switch port, VLAN, live hosts, Dante, OSC and link health from a laptop RJ45.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Avalonia 11.2.x — verify the latest 11.2 patch on nuget.org before release. -->
+    <PackageReference Include="Avalonia" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ProSight.Core\ProSight.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\ProSight\Resources\etr-logo.png" LogicalName="ProSight.Desktop.logo.png" />
+  </ItemGroup>
+</Project>

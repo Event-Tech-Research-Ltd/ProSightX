@@ -1,4 +1,4 @@
-namespace PortSight;
+namespace ProSight;
 
 public static class Samples
 {

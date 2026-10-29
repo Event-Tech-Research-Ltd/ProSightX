@@ -1,4 +1,4 @@
-namespace PortSight;
+namespace ProSight;
 
 public sealed class Neighbor
 {
@@ -42,7 +42,7 @@ public sealed class Neighbor
     {
         var lines = new List<string>
         {
-            "PortSight 1.2.0",
+            $"ProSight {typeof(Neighbor).Assembly.GetName().Version?.ToString(3)}",
             $"Adapter     {adapter}",
             $"Backend     {backend}  frames {frames}",
         };
