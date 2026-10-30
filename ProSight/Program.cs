@@ -22,7 +22,7 @@ static class Program
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
 
         ApplicationConfiguration.Initialize();
-        Application.Run(new MainForm());
+        Application.Run(new StartupContext()); // loading screen first, then the main window
         return 0;
     }
 }

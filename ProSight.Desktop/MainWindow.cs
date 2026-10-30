@@ -49,8 +49,12 @@ public sealed class MainWindow : Window
     ConcurrentDictionary<string, int> _oscCounts = new(); readonly Stopwatch _oscRateWatch = new();
     volatile string? _oscLastAddress;
 
-    public MainWindow()
+    readonly List<NetworkInterface>? _preloaded;
+
+    /// <param name="adapters">Adapters already found by the loading screen; null = enumerate now.</param>
+    public MainWindow(List<NetworkInterface>? adapters = null)
     {
+        _preloaded = adapters;
         Title = "ProSight";
         Width = 1080; Height = 760; MinWidth = 900; MinHeight = 640;
         Background = Bg;
@@ -164,7 +168,7 @@ public sealed class MainWindow : Window
 
     void LoadNics()
     {
-        _adapters.AddRange(CaptureEngine.EthernetNics());
+        _adapters.AddRange(_preloaded ?? CaptureEngine.EthernetNics());
         var names = _adapters.Select(CaptureEngine.DisplayName).ToList();
         if (names.Count == 0) names.Add("(no wired adapter found — offline samples still work)");
         _nics.ItemsSource = names;

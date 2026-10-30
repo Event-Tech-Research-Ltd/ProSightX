@@ -28,8 +28,12 @@ public sealed class MainForm : Form
     ConcurrentDictionary<string, int> _oscCounts = new(); readonly Stopwatch _oscRateWatch = new(); readonly Label _oscRates = new();
     LoadSnapshot? _monitorPrev;
 
-    public MainForm()
+    readonly List<NetworkInterface>? _preloaded;
+
+    /// <param name="adapters">Adapters already found by the loading screen; null = enumerate now.</param>
+    public MainForm(List<NetworkInterface>? adapters = null)
     {
+        _preloaded = adapters;
         // Layout below is in 96-DPI pixels; scale it to the system DPI (fonts already scale, positions didn't → clipping at 125/150 %).
         AutoScaleDimensions = new SizeF(96F, 96F); AutoScaleMode = AutoScaleMode.Dpi;
         Text = "ProSight 2 — switch port & network view"; Icon = TryLoadIcon(); StartPosition = FormStartPosition.CenterScreen; FormBorderStyle = FormBorderStyle.Sizable; MaximizeBox = true; MinimumSize = new Size(960, 680); Size = new Size(1080, 760); BackColor = Bg; ForeColor = Fg; Font = new Font("Segoe UI", 10f);
@@ -126,7 +130,7 @@ public sealed class MainForm : Form
         _monitorStats.Location = new Point(18, 99); _monitorStats.AutoSize = true; _monitorStats.MaximumSize = new Size(900, 0); /* wrap the advice line */ _monitorStats.ForeColor = Fg; _monitorStats.Font = new Font("Consolas", 10f); _monitorStats.Text = "Start the monitor to collect live NIC values."; _history.Location = new Point(18, 232); p.Controls.AddRange([startStop, _monitorStats, _history, Hint("Utilisation rolling history (%)", 18, 212, 8f)]); FillPage(p, _history, 232); return p;
     }
 
-    void LoadNics() { _adapters.AddRange(CaptureEngine.EthernetNics()); for (int i = 0; i < _adapters.Count; i++) _nics.Items.Add(CaptureEngine.DisplayName(_adapters[i])); if (_nics.Items.Count > 0) _nics.SelectedIndex = 0; else _nics.Items.Add("(no Ethernet NIC found — offline samples still work)"); }
+    void LoadNics() { _adapters.AddRange(_preloaded ?? CaptureEngine.EthernetNics()); for (int i = 0; i < _adapters.Count; i++) _nics.Items.Add(CaptureEngine.DisplayName(_adapters[i])); if (_nics.Items.Count > 0) _nics.SelectedIndex = 0; else _nics.Items.Add("(no Ethernet NIC found — offline samples still work)"); }
     NetworkInterface? SelectedNic() => _nics.SelectedIndex >= 0 && _nics.SelectedIndex < _adapters.Count ? _adapters[_nics.SelectedIndex] : null;
     void SetDefaultRange() { var nic = SelectedNic(); if (nic is not null && (_range.Text.Length == 0 || _range.Text == "192.168.1.0/24")) _range.Text = HostScanner.DefaultRange(nic); }
     void LoadSample() { var n = Decoder.Decode(Samples.CiscoAccessVoice()); _listenOutput.Text = Neighbor.Merge(n is null ? [] : [n]).Format("Onboard RJ45 (sample)", "built-in Cisco LLDP decode", 1); _status.Text = "Sample decoded: core-sw-01.lab.local, Gi1/0/24, VLAN 20 / voice VLAN 30."; }
